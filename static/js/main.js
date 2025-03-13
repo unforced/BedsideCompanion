@@ -327,8 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Updating page brightness:', lightsOn, brightnessValue);
         
         if (!lightsOn) {
-            // If lights are off, make the page almost completely black
-            brightnessOverlay.style.opacity = '0.95';
+            // If lights are off, make the page dark but not completely black
+            // Changed from 0.95 to 0.85 to allow some visibility
+            brightnessOverlay.style.opacity = '0.85';
         } else {
             // If lights are on, adjust brightness based on the brightness value
             // Invert the brightness value for the overlay (higher brightness = less overlay)
