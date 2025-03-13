@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Test</title>
+</head>
+<body>
+    <h1>Audio Test</h1>
+    
+    <h2>Rickroll Test</h2>
+    <audio id="rickroll" controls>
+        <source src="audio/rickroll.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button onclick="document.getElementById('rickroll').play()">Play Rickroll</button>
+    
+    <h2>Relaxing Music Test</h2>
+    <audio id="relaxing" controls>
+        <source src="audio/relaxing-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button onclick="document.getElementById('relaxing').play()">Play Relaxing Music</button>
+    
+    <script>
+        // Log any audio errors
+        document.getElementById('rickroll').addEventListener('error', function(e) {
+            console.error('Rickroll error:', e);
+            alert('Error loading rickroll.mp3');
+        });
+        
+        document.getElementById('relaxing').addEventListener('error', function(e) {
+            console.error('Relaxing music error:', e);
+            alert('Error loading relaxing-music.mp3');
+        });
+    </script>
+</body>
+</html> 
