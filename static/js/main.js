@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         if (currentBrightness < 50) {
                             // Need to increase brightness
-                            const increaseTimes = Math.ceil((50 - currentBrightness) / 10);
+                            const increaseTimes = Math.ceil((50 - currentBrightness) / 20);
                             let brightnessPromises = [];
                             
                             for (let i = 0; i < increaseTimes; i++) {
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 });
                         } else if (currentBrightness > 50) {
                             // Need to decrease brightness
-                            const decreaseTimes = Math.ceil((currentBrightness - 50) / 10);
+                            const decreaseTimes = Math.ceil((currentBrightness - 50) / 20);
                             let brightnessPromises = [];
                             
                             for (let i = 0; i < decreaseTimes; i++) {

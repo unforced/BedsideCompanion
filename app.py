@@ -51,19 +51,19 @@ def webhook():
         socketio.emit('state_update', {'lights_on': state['lights_on']})
     
     elif action == 'volume_up':
-        state['volume'] = min(100, state['volume'] + 10)
+        state['volume'] = min(100, state['volume'] + 20)
         socketio.emit('state_update', {'volume': state['volume']})
     
     elif action == 'volume_down':
-        state['volume'] = max(0, state['volume'] - 10)
+        state['volume'] = max(0, state['volume'] - 20)
         socketio.emit('state_update', {'volume': state['volume']})
     
     elif action == 'brightness_up':
-        state['brightness'] = min(100, state['brightness'] + 10)
+        state['brightness'] = min(100, state['brightness'] + 20)
         socketio.emit('state_update', {'brightness': state['brightness']})
     
     elif action == 'brightness_down':
-        state['brightness'] = max(0, state['brightness'] - 10)
+        state['brightness'] = max(0, state['brightness'] - 20)
         socketio.emit('state_update', {'brightness': state['brightness']})
     
     elif action == 'play_song_one':
