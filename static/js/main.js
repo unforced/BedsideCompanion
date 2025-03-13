@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     brightnessOverlay.style.left = '0';
     brightnessOverlay.style.width = '100%';
     brightnessOverlay.style.height = '100%';
-    brightnessOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    brightnessOverlay.style.backgroundColor = 'rgb(0, 0, 0)';
     brightnessOverlay.style.pointerEvents = 'none'; // Allow clicks to pass through
     brightnessOverlay.style.zIndex = '9999';
     brightnessOverlay.style.transition = 'opacity 0.5s ease';
@@ -197,13 +197,19 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Updating page brightness:', lightsOn, brightnessValue);
         
         if (!lightsOn) {
-            // If lights are off, make the page dark
-            brightnessOverlay.style.opacity = '0.7';
+            // If lights are off, make the page almost completely black
+            brightnessOverlay.style.opacity = '0.95';
         } else {
             // If lights are on, adjust brightness based on the brightness value
             // Invert the brightness value for the overlay (higher brightness = less overlay)
-            const overlayOpacity = 0.7 * (1 - (brightnessValue / 100));
+            // Make it nearly black at 0% brightness and gradually lighter as brightness increases
+            const overlayOpacity = 0.95 * (1 - (brightnessValue / 100));
             brightnessOverlay.style.opacity = overlayOpacity.toString();
+            
+            // If brightness is 0%, make it almost completely black even if lights are on
+            if (brightnessValue === 0) {
+                brightnessOverlay.style.opacity = '0.95';
+            }
         }
     }
     
