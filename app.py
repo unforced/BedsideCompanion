@@ -54,4 +54,4 @@ if __name__ == '__main__':
     host = '0.0.0.0'
     # In production, debug should be set to False
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    socketio.run(app, host=host, port=port, debug=debug, allow_unsafe_werkzeug=True) 
+    socketio.run(app, host=host, port=port, debug=debug) 
