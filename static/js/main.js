@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Music player element:', musicPlayer);
     console.log('Audio source:', musicPlayer.querySelector('source').src);
     
+    // Ensure the audio element has the loop attribute
+    musicPlayer.loop = true;
+    
     // State
     let state = {
         music_playing: musicNote.classList.contains('playing'),
@@ -53,7 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
     testButton.addEventListener('click', () => {
         console.log('Test button clicked');
         try {
+            // Reset the audio to the beginning
             musicPlayer.currentTime = 0;
+            
+            // Ensure it's set to loop
+            musicPlayer.loop = true;
+            
+            // Play the audio
             const playPromise = musicPlayer.play();
             console.log('Play initiated');
             
@@ -61,6 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 playPromise
                     .then(() => {
                         console.log('Audio playback started successfully');
+                        // Update the UI to show music is playing
+                        musicNote.classList.add('playing');
+                        musicToggle.querySelector('.toggle-slider').classList.add('active');
+                        state.music_playing = true;
                     })
                     .catch(error => {
                         console.error('Playback error:', error);
@@ -74,6 +87,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     document.body.appendChild(testButton);
+    
+    // Add a stop button for testing
+    const stopButton = document.createElement('button');
+    stopButton.textContent = 'Stop Audio';
+    stopButton.style.position = 'fixed';
+    stopButton.style.bottom = '10px';
+    stopButton.style.right = '150px';
+    stopButton.style.zIndex = '1000';
+    stopButton.style.padding = '10px';
+    stopButton.style.backgroundColor = '#d63031';
+    stopButton.style.color = 'white';
+    stopButton.style.border = 'none';
+    stopButton.style.borderRadius = '5px';
+    stopButton.style.cursor = 'pointer';
+    
+    stopButton.addEventListener('click', () => {
+        console.log('Stop button clicked');
+        try {
+            musicPlayer.pause();
+            musicNote.classList.remove('playing');
+            musicToggle.querySelector('.toggle-slider').classList.remove('active');
+            state.music_playing = false;
+            console.log('Audio stopped');
+        } catch (e) {
+            console.error('Exception during stop:', e);
+        }
+    });
+    
+    document.body.appendChild(stopButton);
     
     // Initialize music player
     if (state.music_playing) {
@@ -148,7 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Attempting to play music');
                 // Use a promise to handle playback restrictions
                 try {
+                    // Reset the audio to the beginning
                     musicPlayer.currentTime = 0;
+                    
+                    // Ensure it's set to loop
+                    musicPlayer.loop = true;
+                    
+                    // Play the audio
                     const playPromise = musicPlayer.play();
                     
                     if (playPromise !== undefined) {
@@ -232,6 +280,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     musicPlayer.addEventListener('ended', () => {
         console.log('Audio ended event fired');
+        // If the audio ends and should be playing, restart it
+        if (state.music_playing) {
+            console.log('Restarting audio because it ended while it should be playing');
+            musicPlayer.currentTime = 0;
+            musicPlayer.play().catch(e => console.error('Error restarting audio:', e));
+        }
     });
     
     musicPlayer.addEventListener('canplay', () => {

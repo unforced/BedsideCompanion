@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Audio Test</title>
+</head>
+<body>
+    <h1>Simple Audio Test</h1>
+    
+    <h2>Rickroll Test</h2>
+    <audio controls loop autoplay>
+        <source src="audio/rickroll.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <h2>Relaxing Music Test</h2>
+    <audio controls loop>
+        <source src="audio/relaxing-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <h2>External Audio Test</h2>
+    <audio controls loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <script>
+        // This script will log when audio starts and stops playing
+        document.querySelectorAll('audio').forEach((audio, index) => {
+            audio.addEventListener('play', () => {
+                console.log(`Audio ${index + 1} started playing`);
+            });
+            
+            audio.addEventListener('pause', () => {
+                console.log(`Audio ${index + 1} paused`);
+            });
+            
+            audio.addEventListener('ended', () => {
+                console.log(`Audio ${index + 1} ended`);
+            });
+            
+            audio.addEventListener('error', (e) => {
+                console.error(`Audio ${index + 1} error:`, e);
+            });
+        });
+    </script>
+</body>
+</html> 
