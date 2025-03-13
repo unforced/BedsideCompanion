@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const socket = io();
     
     // DOM Elements
-    const musicPlayer = document.getElementById('music-player');
+    let musicPlayer = document.getElementById('music-player');
     const musicToggle = document.getElementById('music-toggle');
     const lightToggle = document.getElementById('light-toggle');
     const musicNote = document.querySelector('.music-note');
@@ -352,11 +352,32 @@ document.addEventListener('DOMContentLoaded', () => {
             musicPlayer.pause();
         }
         
-        // Update the audio source
-        musicPlayer.querySelector('source').src = `/static/audio/${songFile}`;
+        // Create a new audio element to avoid caching issues
+        const newAudio = document.createElement('audio');
+        newAudio.id = 'music-player';
+        newAudio.loop = true;
+        newAudio.preload = 'auto';
         
-        // Reload the audio element with the new source
-        musicPlayer.load();
+        // Create a new source element
+        const newSource = document.createElement('source');
+        newSource.src = `/static/audio/${songFile}?t=${new Date().getTime()}`; // Add timestamp to prevent caching
+        newSource.type = 'audio/mpeg';
+        
+        // Add fallback text
+        newAudio.appendChild(newSource);
+        newAudio.appendChild(document.createTextNode('Your browser does not support the audio element.'));
+        
+        // Copy the volume from the old player
+        newAudio.volume = musicPlayer.volume;
+        
+        // Replace the old audio element with the new one
+        musicPlayer.parentNode.replaceChild(newAudio, musicPlayer);
+        
+        // Update the musicPlayer reference
+        musicPlayer = newAudio;
+        
+        // Add event listeners to the new audio element
+        addAudioEventListeners(musicPlayer);
         
         // If music was playing, resume playback with the new song
         if (wasPlaying) {
@@ -373,6 +394,50 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+    
+    // Function to add audio event listeners
+    function addAudioEventListeners(audioElement) {
+        audioElement.addEventListener('play', () => {
+            console.log('Audio play event fired');
+        });
+        
+        audioElement.addEventListener('playing', () => {
+            console.log('Audio playing event fired');
+        });
+        
+        audioElement.addEventListener('pause', () => {
+            console.log('Audio pause event fired');
+        });
+        
+        audioElement.addEventListener('ended', () => {
+            console.log('Audio ended event fired');
+            // If the audio ends and should be playing, restart it
+            if (state.music_playing) {
+                console.log('Restarting audio because it ended while it should be playing');
+                audioElement.currentTime = 0;
+                audioElement.play().catch(e => console.error('Error restarting audio:', e));
+            }
+        });
+        
+        audioElement.addEventListener('canplay', () => {
+            console.log('Audio canplay event fired');
+        });
+        
+        audioElement.addEventListener('canplaythrough', () => {
+            console.log('Audio canplaythrough event fired');
+        });
+        
+        // Add audio error handling
+        audioElement.addEventListener('error', (e) => {
+            console.error('Audio error:', e);
+            console.error('Audio error code:', audioElement.error ? audioElement.error.code : 'unknown');
+            console.error('Audio error message:', audioElement.error ? audioElement.error.message : 'unknown');
+            alert('There was an error playing the audio. Please check the console for details.');
+        });
+    }
+    
+    // Add initial audio event listeners
+    addAudioEventListeners(musicPlayer);
     
     // Function to update song selection UI
     function updateSongSelectionUI(songId) {
@@ -502,43 +567,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
-    // Add audio event listeners for debugging
-    musicPlayer.addEventListener('play', () => {
-        console.log('Audio play event fired');
-    });
-    
-    musicPlayer.addEventListener('playing', () => {
-        console.log('Audio playing event fired');
-    });
-    
-    musicPlayer.addEventListener('pause', () => {
-        console.log('Audio pause event fired');
-    });
-    
-    musicPlayer.addEventListener('ended', () => {
-        console.log('Audio ended event fired');
-        // If the audio ends and should be playing, restart it
-        if (state.music_playing) {
-            console.log('Restarting audio because it ended while it should be playing');
-            musicPlayer.currentTime = 0;
-            musicPlayer.play().catch(e => console.error('Error restarting audio:', e));
-        }
-    });
-    
-    musicPlayer.addEventListener('canplay', () => {
-        console.log('Audio canplay event fired');
-    });
-    
-    musicPlayer.addEventListener('canplaythrough', () => {
-        console.log('Audio canplaythrough event fired');
-    });
-    
-    // Add audio error handling
-    musicPlayer.addEventListener('error', (e) => {
-        console.error('Audio error:', e);
-        console.error('Audio error code:', musicPlayer.error ? musicPlayer.error.code : 'unknown');
-        console.error('Audio error message:', musicPlayer.error ? musicPlayer.error.message : 'unknown');
-        alert('There was an error playing the audio. Please check the console for details.');
-    });
 }); 
