@@ -6,17 +6,37 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'bedside-companion-secret')
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# Song information
+songs = [
+    {
+        'id': 1,
+        'title': 'i/o by Peter Gabriel',
+        'file': 'io.mp3'
+    },
+    {
+        'id': 2,
+        'title': 'Hanuman Chalisa by Krishna Das',
+        'file': 'hanuman.mp3'
+    },
+    {
+        'id': 3,
+        'title': 'Never Gonna Give You Up by Rick Astley',
+        'file': 'rickroll.mp3'
+    }
+]
+
 # State variables
 state = {
     'music_playing': False,
     'lights_on': False,
     'volume': 50,  # 0-100
-    'brightness': 50  # 0-100
+    'brightness': 50,  # 0-100
+    'current_song': songs[0]  # Start with song 1
 }
 
 @app.route('/')
 def index():
-    return render_template('index.html', state=state)
+    return render_template('index.html', state=state, songs=songs)
 
 @app.route('/webhook', methods=['GET'])
 def webhook():
@@ -45,6 +65,18 @@ def webhook():
     elif action == 'brightness_down':
         state['brightness'] = max(0, state['brightness'] - 10)
         socketio.emit('state_update', {'brightness': state['brightness']})
+    
+    elif action == 'play_song_one':
+        state['current_song'] = songs[0]
+        socketio.emit('state_update', {'current_song': state['current_song']})
+    
+    elif action == 'play_song_two':
+        state['current_song'] = songs[1]
+        socketio.emit('state_update', {'current_song': state['current_song']})
+    
+    elif action == 'play_song_three':
+        state['current_song'] = songs[2]
+        socketio.emit('state_update', {'current_song': state['current_song']})
     
     return jsonify({'status': 'success', 'action': action, 'state': state})
 

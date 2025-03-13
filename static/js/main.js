@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeValue = document.querySelector('.volume-value');
     const brightnessLevel = document.querySelector('.brightness-level');
     const brightnessValue = document.querySelector('.brightness-value');
+    const currentSongTitle = document.getElementById('current-song-title');
+    const songOneButton = document.getElementById('song-one');
+    const songTwoButton = document.getElementById('song-two');
+    const songThreeButton = document.getElementById('song-three');
     
     console.log('Music player element:', musicPlayer);
     console.log('Audio source:', musicPlayer.querySelector('source').src);
@@ -41,7 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
         music_playing: musicNote.classList.contains('playing'),
         lights_on: lightBulb.classList.contains('on'),
         volume: parseInt(volumeValue.textContent),
-        brightness: parseInt(brightnessValue.textContent)
+        brightness: parseInt(brightnessValue.textContent),
+        current_song: {
+            id: 1,
+            title: currentSongTitle.textContent,
+            file: musicPlayer.querySelector('source').src.split('/').pop()
+        }
     };
     
     console.log('Initial state:', state);
@@ -157,6 +166,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // Song selection event listeners
+    songOneButton.addEventListener('click', () => {
+        console.log('Song 1 selected');
+        fetch('/webhook?action=play_song_one')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Song 1 response:', data);
+            })
+            .catch(error => {
+                console.error('Error selecting song 1:', error);
+            });
+    });
+    
+    songTwoButton.addEventListener('click', () => {
+        console.log('Song 2 selected');
+        fetch('/webhook?action=play_song_two')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Song 2 response:', data);
+            })
+            .catch(error => {
+                console.error('Error selecting song 2:', error);
+            });
+    });
+    
+    songThreeButton.addEventListener('click', () => {
+        console.log('Song 3 selected');
+        fetch('/webhook?action=play_song_three')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Song 3 response:', data);
+            })
+            .catch(error => {
+                console.error('Error selecting song 3:', error);
+            });
+    });
+    
     // WebSocket event listeners
     socket.on('connect', () => {
         console.log('Connected to server');
@@ -213,6 +259,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // Function to update song source
+    function updateSongSource(songFile) {
+        const wasPlaying = state.music_playing;
+        
+        // Pause the current song if it's playing
+        if (wasPlaying) {
+            musicPlayer.pause();
+        }
+        
+        // Update the audio source
+        musicPlayer.querySelector('source').src = `/static/audio/${songFile}`;
+        
+        // Reload the audio element with the new source
+        musicPlayer.load();
+        
+        // If music was playing, resume playback with the new song
+        if (wasPlaying) {
+            const playPromise = musicPlayer.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error('Error playing new song:', error);
+                    // If playback is prevented, update the UI
+                    state.music_playing = false;
+                    musicNote.classList.remove('playing');
+                    musicToggle.querySelector('.toggle-slider').classList.remove('active');
+                });
+            }
+        }
+    }
+    
+    // Function to update song selection UI
+    function updateSongSelectionUI(songId) {
+        // Remove active class from all song buttons
+        songOneButton.classList.remove('active');
+        songTwoButton.classList.remove('active');
+        songThreeButton.classList.remove('active');
+        
+        // Add active class to the selected song button
+        if (songId === 1) {
+            songOneButton.classList.add('active');
+        } else if (songId === 2) {
+            songTwoButton.classList.add('active');
+        } else if (songId === 3) {
+            songThreeButton.classList.add('active');
+        }
+    }
+    
     // Update UI based on state
     function updateState(newState) {
         console.log('Updating state with:', newState);
@@ -264,6 +358,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Pausing music');
                 musicPlayer.pause();
             }
+        }
+        
+        // Update current song
+        if (newState.hasOwnProperty('current_song')) {
+            state.current_song = newState.current_song;
+            console.log('Current song updated to:', state.current_song);
+            
+            // Update the song title display
+            currentSongTitle.textContent = state.current_song.title;
+            
+            // Update the song selection UI
+            updateSongSelectionUI(state.current_song.id);
+            
+            // Update the audio source
+            updateSongSource(state.current_song.file);
         }
         
         // Update light state

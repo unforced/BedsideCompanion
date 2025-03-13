@@ -7,6 +7,53 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .song-selection {
+            margin-top: 20px;
+            background-color: var(--background-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .song-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        .song-buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .song-button {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            background-color: var(--card-color);
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .song-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .song-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -48,8 +95,22 @@
                         </div>
                         <div class="volume-value">{{ state.volume }}%</div>
                     </div>
+                    <div class="song-selection">
+                        <div class="song-title">Current Song: <span id="current-song-title">{{ state.current_song.title }}</span></div>
+                        <div class="song-buttons">
+                            <div class="song-button {% if state.current_song.id == 1 %}active{% endif %}" id="song-one">
+                                i/o
+                            </div>
+                            <div class="song-button {% if state.current_song.id == 2 %}active{% endif %}" id="song-two">
+                                Hanuman Chalisa
+                            </div>
+                            <div class="song-button {% if state.current_song.id == 3 %}active{% endif %}" id="song-three">
+                                Rick Astley
+                            </div>
+                        </div>
+                    </div>
                     <audio id="music-player" loop preload="auto">
-                        <source src="{{ url_for('static', filename='audio/rickroll.mp3') }}" type="audio/mpeg">
+                        <source src="{{ url_for('static', filename='audio/' + state.current_song.file) }}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
@@ -64,6 +125,9 @@
                     <li><code>/webhook?action=volume_down</code> - Volume Down</li>
                     <li><code>/webhook?action=brightness_up</code> - Brightness Up</li>
                     <li><code>/webhook?action=brightness_down</code> - Brightness Down</li>
+                    <li><code>/webhook?action=play_song_one</code> - Play Song 1 (i/o)</li>
+                    <li><code>/webhook?action=play_song_two</code> - Play Song 2 (Hanuman Chalisa)</li>
+                    <li><code>/webhook?action=play_song_three</code> - Play Song 3 (Rick Astley)</li>
                 </ul>
             </div>
         </div>
