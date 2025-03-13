@@ -21,9 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
         brightness: parseInt(brightnessValue.textContent)
     };
     
+    // Preload the audio file
+    musicPlayer.load();
+    
+    // Set initial volume
+    musicPlayer.volume = state.volume / 100;
+    
     // Initialize music player
     if (state.music_playing) {
-        musicPlayer.play();
+        // Use a promise to handle autoplay restrictions
+        const playPromise = musicPlayer.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.error('Autoplay prevented:', error);
+                // If autoplay is prevented, update the UI to reflect that music is not playing
+                state.music_playing = false;
+                musicNote.classList.remove('playing');
+                musicToggle.querySelector('.toggle-slider').classList.remove('active');
+            });
+        }
     }
     
     // WebSocket event listeners
@@ -68,7 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.music_playing) {
                 musicNote.classList.add('playing');
                 musicToggle.querySelector('.toggle-slider').classList.add('active');
-                musicPlayer.play();
+                
+                // Use a promise to handle playback restrictions
+                const playPromise = musicPlayer.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error('Playback prevented:', error);
+                        // If playback is prevented, update the server state
+                        fetch('/webhook?action=music_toggle')
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Reverting music state:', data);
+                            });
+                    });
+                }
             } else {
                 musicNote.classList.remove('playing');
                 musicToggle.querySelector('.toggle-slider').classList.remove('active');
@@ -111,4 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+    
+    // Add audio error handling
+    musicPlayer.addEventListener('error', (e) => {
+        console.error('Audio error:', e);
+        alert('There was an error playing the audio. Please try again.');
+    });
 }); 
