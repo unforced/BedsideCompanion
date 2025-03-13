@@ -21,6 +21,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ensure the audio element has the loop attribute
     musicPlayer.loop = true;
     
+    // Create an overlay for page brightness control
+    const brightnessOverlay = document.createElement('div');
+    brightnessOverlay.id = 'brightness-overlay';
+    brightnessOverlay.style.position = 'fixed';
+    brightnessOverlay.style.top = '0';
+    brightnessOverlay.style.left = '0';
+    brightnessOverlay.style.width = '100%';
+    brightnessOverlay.style.height = '100%';
+    brightnessOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    brightnessOverlay.style.pointerEvents = 'none'; // Allow clicks to pass through
+    brightnessOverlay.style.zIndex = '9999';
+    brightnessOverlay.style.transition = 'opacity 0.5s ease';
+    brightnessOverlay.style.opacity = '0'; // Start with overlay hidden
+    document.body.appendChild(brightnessOverlay);
+    
     // State
     let state = {
         music_playing: musicNote.classList.contains('playing'),
@@ -30,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     console.log('Initial state:', state);
+    
+    // Set initial brightness
+    updatePageBrightness(state.lights_on, state.brightness);
     
     // Preload the audio file
     musicPlayer.load();
@@ -45,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     testButton.style.position = 'fixed';
     testButton.style.bottom = '10px';
     testButton.style.right = '10px';
-    testButton.style.zIndex = '1000';
+    testButton.style.zIndex = '10000'; // Above the overlay
     testButton.style.padding = '10px';
     testButton.style.backgroundColor = '#6c5ce7';
     testButton.style.color = 'white';
@@ -94,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stopButton.style.position = 'fixed';
     stopButton.style.bottom = '10px';
     stopButton.style.right = '150px';
-    stopButton.style.zIndex = '1000';
+    stopButton.style.zIndex = '10000'; // Above the overlay
     stopButton.style.padding = '10px';
     stopButton.style.backgroundColor = '#d63031';
     stopButton.style.color = 'white';
@@ -174,6 +192,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
     
+    // Function to update page brightness
+    function updatePageBrightness(lightsOn, brightnessValue) {
+        console.log('Updating page brightness:', lightsOn, brightnessValue);
+        
+        if (!lightsOn) {
+            // If lights are off, make the page dark
+            brightnessOverlay.style.opacity = '0.7';
+        } else {
+            // If lights are on, adjust brightness based on the brightness value
+            // Invert the brightness value for the overlay (higher brightness = less overlay)
+            const overlayOpacity = 0.7 * (1 - (brightnessValue / 100));
+            brightnessOverlay.style.opacity = overlayOpacity.toString();
+        }
+    }
+    
     // Update UI based on state
     function updateState(newState) {
         console.log('Updating state with:', newState);
@@ -239,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 lightBulb.classList.remove('on');
                 lightToggle.querySelector('.toggle-slider').classList.remove('active');
             }
+            
+            // Update page brightness when light state changes
+            updatePageBrightness(state.lights_on, state.brightness);
         }
         
         // Update volume
@@ -261,6 +297,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const intensity = state.brightness / 100;
                 lightBulb.style.opacity = intensity;
                 lightBulb.style.boxShadow = `0 0 ${15 * intensity}px var(--light-color)`;
+                
+                // Update page brightness when brightness changes
+                updatePageBrightness(state.lights_on, state.brightness);
             }
         }
     }
