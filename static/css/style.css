@@ -1,0 +1,288 @@
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a29bfe;
+    --light-color: #ffeaa7;
+    --dark-color: #2d3436;
+    --success-color: #00b894;
+    --danger-color: #d63031;
+    --background-color: #f7f9fc;
+    --card-color: #ffffff;
+    --text-color: #2d3436;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+}
+
+.dashboard {
+    background-color: var(--card-color);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.controls-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.control-card {
+    flex: 1;
+    min-width: 300px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.toggle-switch {
+    width: 60px;
+    height: 30px;
+    background-color: #dfe6e9;
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.toggle-slider {
+    width: 26px;
+    height: 26px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-slider.active {
+    transform: translateX(30px);
+    background-color: var(--primary-color);
+}
+
+.toggle-switch:has(.toggle-slider.active) {
+    background-color: var(--secondary-color);
+}
+
+/* Brightness Display */
+.brightness-display, .music-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brightness-icon, .music-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.light-bulb {
+    width: 30px;
+    height: 30px;
+    background-color: #dfe6e9;
+    border-radius: 50%;
+    position: relative;
+    transition: var(--transition);
+}
+
+.light-bulb:before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #dfe6e9;
+    bottom: -5px;
+    left: 10px;
+    border-radius: 3px;
+}
+
+.light-bulb.on {
+    background-color: var(--light-color);
+    box-shadow: 0 0 15px var(--light-color);
+}
+
+.light-bulb.on:before {
+    background-color: var(--light-color);
+}
+
+.brightness-bar, .volume-bar {
+    flex: 1;
+    height: 10px;
+    background-color: #dfe6e9;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.brightness-level, .volume-level {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    transition: var(--transition);
+}
+
+.brightness-value, .volume-value {
+    width: 50px;
+    text-align: right;
+    font-weight: 500;
+}
+
+/* Music Display */
+.music-note {
+    width: 20px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid #dfe6e9;
+    position: relative;
+}
+
+.music-note:before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 20px;
+    background-color: #dfe6e9;
+    right: -3px;
+    top: 0;
+}
+
+.music-note:after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 3px;
+    background-color: #dfe6e9;
+    right: -3px;
+    top: 0;
+}
+
+.music-note.playing {
+    border-color: var(--primary-color);
+}
+
+.music-note.playing:before,
+.music-note.playing:after {
+    background-color: var(--primary-color);
+}
+
+/* Webhook Info */
+.webhook-info {
+    background-color: var(--background-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.webhook-info h3 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.webhook-info ul {
+    list-style-type: none;
+}
+
+.webhook-info li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.webhook-info code {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-family: monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .controls-section {
+        flex-direction: column;
+    }
+    
+    .control-card {
+        width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.light-bulb.on {
+    animation: pulse 2s infinite;
+}
+
+@keyframes musicWave {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.music-note.playing {
+    animation: musicWave 1.5s infinite;
+} 

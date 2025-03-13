@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bedside Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <h1>Bedside Companion</h1>
+            
+            <div class="controls-section">
+                <div class="control-card" id="light-card">
+                    <div class="card-header">
+                        <h2>Lighting</h2>
+                        <div class="toggle-switch" id="light-toggle">
+                            <div class="toggle-slider {% if state.lights_on %}active{% endif %}"></div>
+                        </div>
+                    </div>
+                    <div class="brightness-display">
+                        <div class="brightness-icon">
+                            <div class="light-bulb {% if state.lights_on %}on{% endif %}"></div>
+                        </div>
+                        <div class="brightness-bar">
+                            <div class="brightness-level" style="width: {{ state.brightness }}%"></div>
+                        </div>
+                        <div class="brightness-value">{{ state.brightness }}%</div>
+                    </div>
+                </div>
+                
+                <div class="control-card" id="music-card">
+                    <div class="card-header">
+                        <h2>Music</h2>
+                        <div class="toggle-switch" id="music-toggle">
+                            <div class="toggle-slider {% if state.music_playing %}active{% endif %}"></div>
+                        </div>
+                    </div>
+                    <div class="music-display">
+                        <div class="music-icon">
+                            <div class="music-note {% if state.music_playing %}playing{% endif %}"></div>
+                        </div>
+                        <div class="volume-bar">
+                            <div class="volume-level" style="width: {{ state.volume }}%"></div>
+                        </div>
+                        <div class="volume-value">{{ state.volume }}%</div>
+                    </div>
+                    <audio id="music-player" loop>
+                        <source src="{{ url_for('static', filename='audio/relaxing-music.mp3') }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+            
+            <div class="webhook-info">
+                <h3>Webhook Controls</h3>
+                <ul>
+                    <li><code>/webhook?action=music_toggle</code> - Start/Stop Music</li>
+                    <li><code>/webhook?action=lights_toggle</code> - Lights On/Off</li>
+                    <li><code>/webhook?action=volume_up</code> - Volume Up</li>
+                    <li><code>/webhook?action=volume_down</code> - Volume Down</li>
+                    <li><code>/webhook?action=brightness_up</code> - Brightness Up</li>
+                    <li><code>/webhook?action=brightness_down</code> - Brightness Down</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
