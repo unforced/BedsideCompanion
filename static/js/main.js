@@ -144,6 +144,90 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.body.appendChild(stopButton);
     
+    // Add a night light switch button
+    const nightLightButton = document.createElement('button');
+    nightLightButton.textContent = '💡 Night Light';
+    nightLightButton.style.position = 'fixed';
+    nightLightButton.style.bottom = '10px';
+    nightLightButton.style.right = '250px';
+    nightLightButton.style.zIndex = '10000'; // Above the overlay
+    nightLightButton.style.padding = '10px';
+    nightLightButton.style.backgroundColor = '#ffeaa7';
+    nightLightButton.style.color = '#2d3436';
+    nightLightButton.style.border = 'none';
+    nightLightButton.style.borderRadius = '5px';
+    nightLightButton.style.cursor = 'pointer';
+    nightLightButton.style.boxShadow = '0 0 10px rgba(255, 234, 167, 0.7)';
+    nightLightButton.style.fontWeight = 'bold';
+    
+    // Add a glow effect on hover
+    nightLightButton.addEventListener('mouseover', () => {
+        nightLightButton.style.boxShadow = '0 0 15px rgba(255, 234, 167, 1)';
+    });
+    
+    nightLightButton.addEventListener('mouseout', () => {
+        nightLightButton.style.boxShadow = '0 0 10px rgba(255, 234, 167, 0.7)';
+    });
+    
+    nightLightButton.addEventListener('click', () => {
+        console.log('Night light button clicked');
+        
+        // Turn on lights at 50% brightness
+        fetch('/webhook?action=lights_toggle')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Lights toggled:', data);
+                
+                // If lights are now on, set brightness to 50%
+                if (data.state.lights_on) {
+                    // Only adjust brightness if it's not already at 50%
+                    if (data.state.brightness !== 50) {
+                        // Set brightness to exactly 50%
+                        const currentBrightness = data.state.brightness;
+                        
+                        if (currentBrightness < 50) {
+                            // Need to increase brightness
+                            const increaseTimes = Math.ceil((50 - currentBrightness) / 10);
+                            let brightnessPromises = [];
+                            
+                            for (let i = 0; i < increaseTimes; i++) {
+                                brightnessPromises.push(
+                                    fetch('/webhook?action=brightness_up')
+                                        .then(response => response.json())
+                                );
+                            }
+                            
+                            Promise.all(brightnessPromises)
+                                .then(() => {
+                                    console.log('Brightness set to 50%');
+                                });
+                        } else if (currentBrightness > 50) {
+                            // Need to decrease brightness
+                            const decreaseTimes = Math.ceil((currentBrightness - 50) / 10);
+                            let brightnessPromises = [];
+                            
+                            for (let i = 0; i < decreaseTimes; i++) {
+                                brightnessPromises.push(
+                                    fetch('/webhook?action=brightness_down')
+                                        .then(response => response.json())
+                                );
+                            }
+                            
+                            Promise.all(brightnessPromises)
+                                .then(() => {
+                                    console.log('Brightness set to 50%');
+                                });
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling night light:', error);
+            });
+    });
+    
+    document.body.appendChild(nightLightButton);
+    
     // Initialize music player
     if (state.music_playing) {
         console.log('Attempting to autoplay music');

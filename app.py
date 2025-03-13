@@ -78,6 +78,16 @@ def webhook():
         state['current_song'] = songs[2]
         socketio.emit('state_update', {'current_song': state['current_song']})
     
+    elif action == 'night_light':
+        # Turn on lights if they're off
+        if not state['lights_on']:
+            state['lights_on'] = True
+            socketio.emit('state_update', {'lights_on': state['lights_on']})
+        
+        # Set brightness to exactly 50%
+        state['brightness'] = 50
+        socketio.emit('state_update', {'brightness': state['brightness']})
+    
     return jsonify({'status': 'success', 'action': action, 'state': state})
 
 if __name__ == '__main__':
